@@ -1,9 +1,10 @@
 # NPL-study
 
   # week1 
-    # 0. Copied Olga's work and modified to make it work on my laptop 
+    
+    0. Copied Olga's work and modified to make it work on my laptop 
       # It is still running to make vetors for WikiText103. So tried to show check points based on WikiText2 
-    # 1. print similar 10 words 
+    1. print similar 10 words 
       # at directory check_point
       # python3 print_similar_words.py happy 
       ll: 0.685

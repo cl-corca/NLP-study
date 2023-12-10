@@ -20,6 +20,37 @@
     girl: 0.519
     really: 0.516
     believe: 0.505
+
+  `python3 print_similar_words.py tree`      
+  
+    indicating: 0.575
+    theme: 0.556
+    monument: 0.545
+    image: 0.540
+    planet: 0.538
+    message: 0.527
+    reference: 0.526
+    painting: 0.519
+    lies: 0.504
+    sky: 0.503
+
+ `python3 print_similar_words.py cloud`
+ 
+    surface: 0.530
+    color: 0.500
+    outer: 0.488
+    core: 0.478
+    sound: 0.473
+    atmosphere: 0.467
+    eyes: 0.457
+    flow: 0.456
+    vocals: 0.455
+    beyoncé: 0.442
+
+  `python3 print_similar_words.py pencil`    
+  
+    Out of vocabulary word (학습되지 않은 단어 pencil) 
+
     
   3. calculate words
      
@@ -37,6 +68,32 @@
     republic: 0.490
     duke: 0.471
     part: 0.469
+
+  `python3 cal_words.py bigger big small`
+  
+    small: 0.582
+    <unk>: 0.513
+    base: 0.444
+    oil: 0.427
+    garrison: 0.424
+    predators: 0.422
+    operations: 0.421
+    aircraft: 0.418
+    houses: 0.407
+    fields: 0.401
+
+ `python3 cal_words.py Paris France Germany`
+ 
+    <unk>: 1.000
+    words: 0.378
+    scully: 0.370
+    compounds: 0.368
+    wings: 0.360
+    genus: 0.351
+    santa: 0.350
+    cells: 0.346
+    rome: 0.345
+    murder: 0.345
     
 -------------------- 
 The Below is the original readme from Olga's github 

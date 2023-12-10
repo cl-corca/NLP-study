@@ -4,8 +4,7 @@
     
     1. Copied Olga's work and modified to make it work on my laptop 
       It is still running to make vetors for WikiText103. So tried to show check points 
-      based on WikiText2 
-      
+      based on WikiText2   
     1. print similar 10 words 
       > at directory check_point
       `$ python3 print_similar_words.py happy` 
@@ -19,7 +18,6 @@
       girl: 0.519
       really: 0.516
       believe: 0.505
-
     1. calculate words 
       > at directory check_point 
       `$ python3 cal_words king man woman` 

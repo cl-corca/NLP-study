@@ -17,3 +17,17 @@
       girl: 0.519
       really: 0.516
       believe: 0.505
+
+    2. calculate words 
+      # at directory check_point 
+      # python3 cal_words king man woman 
+      king: 0.742
+      jesus: 0.520
+      earl: 0.515
+      son: 0.510
+      charles: 0.506
+      reign: 0.504
+      sir: 0.494
+      republic: 0.490
+      duke: 0.471
+      part: 0.469

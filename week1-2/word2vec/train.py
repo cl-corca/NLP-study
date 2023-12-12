@@ -104,6 +104,10 @@ def train():
     loss_path = os.path.join(DIR_W, "loss.json")
     with open(loss_path, "w") as fp:
         json.dump(loss_dict, fp)    
+
+    #save vocab
+    vocab_path = os.path.join(DIR_W, "vocab.pt")
+    torch.save(vocab, vocab_path)
  
 if __name__ == '__main__':
     train()

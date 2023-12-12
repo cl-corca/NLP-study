@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import torch
 import sys
 
@@ -7,7 +6,7 @@ from sklearn.manifold import TSNE
 
 sys.path.append("../")
 
-folder = "weights/cbow_WikiText2"
+folder = "weights/Wikiset2"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model = torch.load(f"../{folder}/model.pt", map_location=device)

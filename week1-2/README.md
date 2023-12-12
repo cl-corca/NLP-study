@@ -81,7 +81,7 @@
     wooden: 0.399  
 
  `python3 cal_words.py Paris France Germany`
- 
+   
    paris: 0.738
    germany: 0.552
    studios: 0.540

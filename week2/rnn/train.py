@@ -123,7 +123,7 @@ def main():
     for epoch in range(1, EPOCHS + 1):
         epoch_start_time = time.time()
         train(train_dataloader, optimizer=optimizer, criterion=criterion, epoch=epoch)
-        accu_val = evaluate(valid_dataloader, optimizer=optimizer, criterion=criterion, epoch=epoch)
+        accu_val = evaluate(valid_dataloader, criterion=criterion)
         if total_accu is not None and total_accu > accu_val:
             scheduler.step()
         else:

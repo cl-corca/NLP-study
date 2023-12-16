@@ -40,8 +40,8 @@ def collate_cbow(batch, text_pipeline):
 def get_dataloader_and_vocab(ds_type, vocab=None):
     
     #CL: Choose one of WikiText2 and WikiText103
-    data_iter = to_map_style_dataset(WikiText2(root='data/', split=ds_type)) 
-    #data_iter = to_map_style_dataset(WikiText103(root='data/', split=ds_type)) 
+    #data_iter = to_map_style_dataset(WikiText2(root='data/', split=ds_type)) 
+    data_iter = to_map_style_dataset(WikiText103(root='data/', split=ds_type)) 
 
     tokenizer = get_tokenizer("basic_english", language="en")
     if not vocab:

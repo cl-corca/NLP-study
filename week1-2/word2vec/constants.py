@@ -13,5 +13,5 @@ EMBED_DIMENSION = 300
 EMBED_MAX_NORM = 1
 
 #weight directory 
-DIR_W = 'weights/Wikiset2'
+DIR_W = 'weights/Wikiset103'
 

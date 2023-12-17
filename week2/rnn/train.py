@@ -21,9 +21,9 @@ class RNNClassifier(nn.Module):
         super(RNNClassifier, self).__init__()
         self.embedding_layer = nn.Embedding(num_embeddings=vocab_size, embedding_dim=embed_len)
         #TODO (cl)
-        #self.rnn = nn.RNN(input_size=embed_len, hidden_size=hidden_dim, num_layers=n_layers, batch_first=True)
+        self.rnn = nn.RNN(input_size=embed_len, hidden_size=hidden_dim, num_layers=n_layers, batch_first=True)
         #self.rnn = CL_LSTM(input_size=embed_len, hidden_size=hidden_dim)
-        self.rnn = CL_RNN(input_size=embed_len, hidden_size=hidden_dim)
+        #self.rnn = CL_RNN(input_size=embed_len, hidden_size=hidden_dim)
         self.linear = nn.Linear(hidden_dim, n_classes)
         self.hidden_dim = hidden_dim
         self.n_layers = n_layers

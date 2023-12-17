@@ -3,7 +3,7 @@ import time
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import random_split
 from torchtext.data.functional import to_map_style_dataset
-from model import TextClassificationModel,RNNClassifier
+from model import TextClassificationModel
 from torchtext.datasets import AG_NEWS
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
@@ -31,8 +31,8 @@ train_iter = AG_NEWS(split="train")
 num_class = len(set([label for (label, text) in train_iter]))
 vocab_size = len(vocab)
 # CL choose model RNN or LSTM 
-#model = TextClassificationModel(vocab_size, EMSIZE, num_class).to(device)
-model = RNNClassifier(vocab_size, EMSIZE, num_class).to(device)
+model = TextClassificationModel(vocab_size, EMSIZE, num_class).to(device)
+#model = RNNClassifier(vocab_size, EMSIZE, num_class).to(device)
 text_pipeline = lambda x: vocab(tokenizer(x))
 label_pipeline = lambda x: int(x) - 1
 
@@ -157,8 +157,16 @@ def main():
     was even more impressive considering he’d never played the \
     front nine at TPC Southwind."
 
-    print("This is a %s news" % ag_news_label[predict(ex_text_str, text_pipeline)])
+    ex_text_str2 = "Congress often heads home at the end of the year \
+    with a long to-do list left undone. But as Washington begins \
+    to empty out this week, Congress is set to leave a remarkably \
+    long menu of business world items on the table."
 
+    ex_text_str3 = "The major stock indices rallied higher for their seventh straight week"
+
+    print("This is a %s news" % ag_news_label[predict(ex_text_str, text_pipeline)])
+    print("This is a %s news" % ag_news_label[predict(ex_text_str2, text_pipeline)])
+    print("This is a %s news" % ag_news_label[predict(ex_text_str3, text_pipeline)])
 
     
  

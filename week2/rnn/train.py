@@ -14,16 +14,16 @@ LR = 1e-3
 EMBED_LEN = 50 
 HIDDEN_DIM = 50 
 N_LAYERS = 1
-DIR_W = 'data/rnn' #TODO (cl): 'rnn' for rnn_classifier, 'lstm' for lstm_classifier 
+DIR_W = 'data/cl_rnn' #TODO (cl): 'rnn' for rnn_classifier, 'lstm' for lstm_classifier 
 
 class RNNClassifier(nn.Module):
     def __init__(self, vocab_size, embed_len, hidden_dim, n_layers, n_classes):
         super(RNNClassifier, self).__init__()
         self.embedding_layer = nn.Embedding(num_embeddings=vocab_size, embedding_dim=embed_len)
         #TODO (cl)
-        self.rnn = nn.RNN(input_size=embed_len, hidden_size=hidden_dim, num_layers=n_layers, batch_first=True)
+        #self.rnn = nn.RNN(input_size=embed_len, hidden_size=hidden_dim, num_layers=n_layers, batch_first=True)
         #self.rnn = CL_LSTM(input_size=embed_len, hidden_size=hidden_dim)
-        #self.rnn = CL_RNN(input_size=embed_len, hidden_size=hidden_dim)
+        self.rnn = CL_RNN(input_size=embed_len, hidden_size=hidden_dim)
         self.linear = nn.Linear(hidden_dim, n_classes)
         self.hidden_dim = hidden_dim
         self.n_layers = n_layers

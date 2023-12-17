@@ -64,5 +64,5 @@
     This is a Sci/Tec news
 
 
-In theory, some articles written in Sci/Tec with some Golf or Tennis examples may show different results between LSTM and RNN. 
-LSTM may show more accurate result since this kind of article is better to be classified as Sci/Tec than Sports. 
+In theory, some articles written in Sci/Tec topic with Golf or Tennis examples later may show different results between LSTM and RNN. 
+LSTM may show more accurate result as Sci/Tec while RNN show as Sports based only by examples. 

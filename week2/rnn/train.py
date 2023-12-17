@@ -1,164 +1,113 @@
-import torch 
-import time
-from torch.utils.data import DataLoader
-from torch.utils.data.dataset import random_split
-from torchtext.data.functional import to_map_style_dataset
-from model import TextClassificationModel
-from torchtext.datasets import AG_NEWS
-from torchtext.data.utils import get_tokenizer
-from torchtext.vocab import build_vocab_from_iterator
+import os
+import json
+import numpy as np
+import torch
+from torch import nn, optim
+from dataloader import get_dataloader_and_vocab
+from sklearn.metrics import accuracy_score
+from tqdm import tqdm
+from model import CL_LSTM, CL_RNN
 
-# Hyperparameters
-EPOCHS = 10  # epoch
-LR = 5  # learning rate
-BATCH_SIZE = 64  # batch size for training
+# number of epoch in training
+EPOCHS = 15
+LR = 1e-3
+EMBED_LEN = 50 
+HIDDEN_DIM = 50 
+N_LAYERS = 1
+DIR_W = 'data/rnn' #TODO (cl): 'rnn' for rnn_classifier, 'lstm' for lstm_classifier 
 
-tokenizer = get_tokenizer("basic_english")
-train_iter = AG_NEWS(split="train")
+class RNNClassifier(nn.Module):
+    def __init__(self, vocab_size, embed_len, hidden_dim, n_layers, n_classes):
+        super(RNNClassifier, self).__init__()
+        self.embedding_layer = nn.Embedding(num_embeddings=vocab_size, embedding_dim=embed_len)
+        #TODO (cl)
+        #self.rnn = nn.RNN(input_size=embed_len, hidden_size=hidden_dim, num_layers=n_layers, batch_first=True)
+        #self.rnn = CL_LSTM(input_size=embed_len, hidden_size=hidden_dim)
+        self.rnn = CL_RNN(input_size=embed_len, hidden_size=hidden_dim)
+        self.linear = nn.Linear(hidden_dim, n_classes)
+        self.hidden_dim = hidden_dim
+        self.n_layers = n_layers
 
-
-def yield_tokens(data_iter):
-    for _, text in data_iter:
-        yield tokenizer(text)
-
-
-vocab = build_vocab_from_iterator(yield_tokens(train_iter), specials=["<unk>"])
-vocab.set_default_index(vocab["<unk>"])
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-train_iter = AG_NEWS(split="train")
-num_class = len(set([label for (label, text) in train_iter]))
-vocab_size = len(vocab)
-emsize = 64
-model = TextClassificationModel(vocab_size, emsize, num_class).to(device)
-text_pipeline = lambda x: vocab(tokenizer(x))
-label_pipeline = lambda x: int(x) - 1
-
-def collate_batch(batch):
-    label_list, text_list, offsets = [], [], [0]
-    for _label, _text in batch:
-        label_list.append(label_pipeline(_label))
-        processed_text = torch.tensor(text_pipeline(_text), dtype=torch.int64)
-        text_list.append(processed_text)
-        offsets.append(processed_text.size(0))
-    label_list = torch.tensor(label_list, dtype=torch.int64)
-    offsets = torch.tensor(offsets[:-1]).cumsum(dim=0)
-    text_list = torch.cat(text_list)
-    return label_list.to(device), text_list.to(device), offsets.to(device)
-
-
-dataloader = DataLoader(
-    train_iter, batch_size=8, shuffle=False, collate_fn=collate_batch
-)
-
-def train(dataloader, optimizer, criterion, epoch):
-    model.train()
-    total_acc, total_count = 0, 0
-    log_interval = 500
-    start_time = time.time()
-
-    for idx, (label, text, offsets) in enumerate(dataloader):
-        optimizer.zero_grad()
-        predicted_label = model(text, offsets)
-        loss = criterion(predicted_label, label)
-        loss.backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 0.1)
-        optimizer.step()
-        total_acc += (predicted_label.argmax(1) == label).sum().item()
-        total_count += label.size(0)
-        if idx % log_interval == 0 and idx > 0:
-            elapsed = time.time() - start_time
-            print(
-                "| epoch {:3d} | {:5d}/{:5d} batches "
-                "| accuracy {:8.3f}".format(
-                    epoch, idx, len(dataloader), total_acc / total_count
-                )
-            )
-            total_acc, total_count = 0, 0
-            start_time = time.time()
-
-
-def evaluate(dataloader, criterion):
-    model.eval()
-    total_acc, total_count = 0, 0
-
-    with torch.no_grad():
-        for idx, (label, text, offsets) in enumerate(dataloader):
-            predicted_label = model(text, offsets)
-            loss = criterion(predicted_label, label)
-            total_acc += (predicted_label.argmax(1) == label).sum().item()
-            total_count += label.size(0)
-    return total_acc / total_count
-
-def predict(text, text_pipeline):
-    with torch.no_grad():
-        text = torch.tensor(text_pipeline(text))
-        output = model(text, torch.tensor([0]))
-        return output.argmax(1).item() + 1
+    def forward(self, input):
+        embeddings = self.embedding_layer(input)
+        output, hidden = self.rnn(embeddings, torch.randn(self.n_layers, len(input), self.hidden_dim))
+        return self.linear(output[:,-1])
     
+def train():
+    if not os.path.exists(DIR_W):
+        os.makedirs(DIR_W)
 
-def main():
-    criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(model.parameters(), lr=LR)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.1)
-    total_accu = None
-    train_iter, test_iter = AG_NEWS()
-    train_dataset = to_map_style_dataset(train_iter)
-    test_dataset = to_map_style_dataset(test_iter)
-    num_train = int(len(train_dataset) * 0.95)
-    split_train_, split_valid_ = random_split(
-        train_dataset, [num_train, len(train_dataset) - num_train]
+    train_loader, vocab, classes = get_dataloader_and_vocab(
+        ds_type="train",
+        vocab=None,
+        classes=None
     )
 
-    train_dataloader = DataLoader(
-        split_train_, batch_size=BATCH_SIZE, shuffle=True, collate_fn=collate_batch
-    )
-    valid_dataloader = DataLoader(
-        split_valid_, batch_size=BATCH_SIZE, shuffle=True, collate_fn=collate_batch
-    )
-    test_dataloader = DataLoader(
-        test_dataset, batch_size=BATCH_SIZE, shuffle=True, collate_fn=collate_batch
+    test_loader, _, _ = get_dataloader_and_vocab(
+        ds_type="test",
+        vocab=vocab,
+        classes=classes
     )
 
-    for epoch in range(1, EPOCHS + 1):
-        epoch_start_time = time.time()
-        train(train_dataloader, optimizer=optimizer, criterion=criterion, epoch=epoch)
-        accu_val = evaluate(valid_dataloader, criterion=criterion)
-        if total_accu is not None and total_accu > accu_val:
-            scheduler.step()
-        else:
-            total_accu = accu_val
-        print("-" * 59)
-        print(
-            "| end of epoch {:3d} | time: {:5.2f}s | "
-            "valid accuracy {:8.3f} ".format(
-                epoch, time.time() - epoch_start_time, accu_val
-            )
-        )
-        print("-" * 59)
-    
-    print("Checking the results of test dataset.")
-    accu_test = evaluate(test_dataloader, criterion=criterion)
-    print("test accuracy {:8.3f}".format(accu_test))
+    vocab_size = len(vocab)
+    model = RNNClassifier(vocab_size=vocab_size, embed_len=EMBED_LEN, hidden_dim=HIDDEN_DIM, n_layers=N_LAYERS, n_classes=len(classes))
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=LR) 
 
-    ag_news_label = {1: "World", 2: "Sports", 3: "Business", 4: "Sci/Tec"}
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
 
-    ex_text_str = "MEMPHIS, Tenn. – Four days ago, Jon Rahm was \
-    enduring the season’s worst weather conditions on Sunday at The \
-    Open on his way to a closing 75 at Royal Portrush, which \
-    considering the wind and the rain was a respectable showing. \
-    Thursday’s first round at the WGC-FedEx St. Jude Invitational \
-    was another story. With temperatures in the mid-80s and hardly any \
-    wind, the Spaniard was 13 strokes better in a flawless round. \
-    Thanks to his best putting performance on the PGA Tour, Rahm \
-    finished with an 8-under 62 for a three-stroke lead, which \
-    was even more impressive considering he’d never played the \
-    front nine at TPC Southwind."
+    #to save loss after training
+    loss_dict = {'train': [], 'test': []}
 
-    print("This is a %s news" % ag_news_label[predict(ex_text_str, text_pipeline)])
+    for epoch in range(EPOCHS):
+        print(f"start epoch {epoch+1}/{EPOCHS}")
+
+        #train epoch
+        running_loss = []
+        for X, Y in tqdm(train_loader):
+            Y_preds = model(X)
+            loss = criterion(Y_preds, Y)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            running_loss.append(loss.item())
+
+        print("Train Loss : {:.3f}".format(torch.tensor(running_loss).mean()))
+        epoch_loss = np.mean(running_loss)
+        loss_dict["train"].append(epoch_loss)
+
+        #test epoch
+        with torch.no_grad():
+            Y_shuffled, Y_preds, running_loss = [],[],[]
+            for X, Y in test_loader:
+                preds = model(X)
+                loss = criterion(preds, Y)
+                running_loss.append(loss.item())
+                Y_shuffled.append(Y)
+                Y_preds.append(preds.argmax(dim=-1))
+            
+            Y_shuffled = torch.cat(Y_shuffled)
+            Y_preds = torch.cat(Y_preds)
+
+            print("Valid Loss : {:.3f}".format(torch.tensor(running_loss).mean()))
+            print("Valid Acc  : {:.3f}".format(accuracy_score(Y_shuffled.detach().numpy(), Y_preds.detach().numpy())))
+            epoch_loss = np.mean(running_loss)
+            loss_dict["test"].append(epoch_loss)
 
 
-    
- 
+    #save model CL: change directory name based on dataset WikiSet2: 2, WikiSet103: 103
+    model_path = os.path.join(DIR_W, "model.pt")
+    torch.save(model, model_path)
+
+    #save loss CL: change directory name based on dataset WikiSet2: 2, WikiSet103: 103
+    loss_path = os.path.join(DIR_W, "loss.json")
+    with open(loss_path, "w") as fp:
+        json.dump(loss_dict, fp)
+
+    #save vocab
+    vocab_path = os.path.join(DIR_W, "vocab.pt")
+    torch.save(vocab, vocab_path)
+
 if __name__ == '__main__':
-    main()
+    train()

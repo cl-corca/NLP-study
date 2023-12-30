@@ -21,8 +21,8 @@ class RNNClassifier(nn.Module):
         output, hidden = self.rnn(embeddings, torch.randn(self.n_layers, len(input), self.hidden_dim))
         return self.linear(output[:,-1])
     
-model = torch.load("data/cl_rnn/model.pt")
-vocab = torch.load("data/cl_rnn/vocab.pt")
+model = torch.load("data/cl_lstm/model.pt")
+vocab = torch.load("data/cl_lstm/vocab.pt")
 tokenizer = get_tokenizer("basic_english")
 text_pipeline = lambda x: vocab(tokenizer(x))
 ag_news_label = {1: "World", 2: "Sports", 3: "Business", 4: "Sci/Tec"}

@@ -2,6 +2,7 @@ import torch
 import math
 from torch import nn
 
+#pytorch example utilizing EmbeddingBag 
 class TextClassificationModel(nn.Module):
     def __init__(self, vocab_size, embed_dim, num_class):
         super(TextClassificationModel, self).__init__()

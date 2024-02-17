@@ -93,8 +93,8 @@ def test():
 def generate_examples():
     en = [
         "The quick brown fox jumps over the lazy dog.",
-        "Every morning, I enjoy a cup of coffee while watching the sunrise.",
-        "Technology is rapidly advancing, transforming how we live and work.",
+        "I enjoy listening to classical music while I work.",
+        "The sunset painted the sky in shades of pink and orange.", 
     ]
 
     tokenizer = get_tokenizer()
@@ -118,5 +118,5 @@ def generate_examples():
 
 
 if __name__ == "__main__":
-    test()
-    #generate_examples()
+    #test()
+    generate_examples()

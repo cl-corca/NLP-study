@@ -56,19 +56,35 @@ def get_tokenizer():
     tokenizer = Tokenizer.from_file(saved_tokenizer_path)
     return tokenizer
 
-def get_dataloader(is_train):
+def get_dataloader(batch_size=BATCH_SIZE):
     tokenizer = get_tokenizer()
-    train_en, train_de = load_data(is_train)
+    train_en, train_de = load_data(True)
     dataset = WMT14Dataset(
         tokenizer,
         train_en,
         train_de,
         seq_length=MAX_SEQUENCE_LENGTH,
+    )
+    dataloader = DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=True,
+    )
+    return dataloader
+
+def get_test_dataloader(batch_size=32):
+    tokenizer = get_tokenizer()
+    test_en, test_de = load_data(False)
+    dataset = WMT14TestDataset(
+        tokenizer,
+        test_en,
+        test_de,
+        seq_length=100,
     )    
     dataloader = DataLoader(
         dataset,
-        batch_size=BATCH_SIZE,
-        shuffle=is_train,
+        batch_size=batch_size,
+        shuffle=False,
     )
     return dataloader
 
@@ -137,11 +153,17 @@ class WMT14Dataset(Dataset):
     def __len__(self):
         return len(self.en)
 
+class WMT14TestDataset(WMT14Dataset):
+    def __getitem__(self, index: int) -> tuple[str, str]:
+        return self.en[index], self.de[index]
 
 # test code to save tokenizer.json to data directory
 if __name__ == '__main__':
     print("run get_tokenizer")
     get_tokenizer()
     print("run get_dataloader")
-    get_dataloader()
-
+    dataloader = get_dataloader()
+    print(dataloader) 
+    print("run get_test_dataloader")
+    dataloader2 = get_test_dataloader()
+    print(dataloader2) 

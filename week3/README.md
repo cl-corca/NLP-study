@@ -22,7 +22,7 @@ Implement transformer
   * `$ nohup python3 predict.py > bleu.out`
   * 0.482 (48.2%) 
 
-- 3 examples: modify predict.py to run generate_examples()
+- 3 examples: modify predict.py to run translate_examples()
   *`$ python3 predict.py`
 
   >The quick brown fox jumps over the lazy dog.

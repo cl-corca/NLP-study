@@ -3,8 +3,8 @@ import torch
 from torch import IntTensor
 
 from model import Transformer
-from constants import *
 from datatool import get_test_dataloader, get_tokenizer
+from constants import *
 
 def predict(model, tokenizer, sentence, max_sequence_length) -> str:
     model.eval()
@@ -49,7 +49,7 @@ def predict(model, tokenizer, sentence, max_sequence_length) -> str:
 def test():
     tokenizer = get_tokenizer()
     dataloader = get_test_dataloader()
-    pad_idx = PAD_IDX #dataset.pad
+    pad_idx = PAD_IDX
 
     model = Transformer(
         pad_idx, #TODO (cl): check PAD_IDX 
@@ -65,22 +65,20 @@ def test():
     model.load_state_dict(torch.load("data/transformer_model_final.json"))
 
     total_bleu = 0.0
-    count = 0
+    cnt = 0
+    len_loader = len(dataloader)
 
     for i, (en, de) in enumerate(dataloader):
-        en = list(en)
-        de = list(de)
-        for en_, de_ in zip(en, de):
-            output = predict(model, tokenizer, en_, max_sequence_length=MAX_SEQUENCE_LENGTH)
-            total_bleu += bleu.sentence_bleu([de_], output)
-            count += 1
-        print(f"BLEU: {total_bleu / count} {i} / {len(dataloader)}")
-
-    print(f"BLEU: {total_bleu / count}")
+        for e, d in zip(list(en), list(de)):
+            output = predict(model, tokenizer, e, max_sequence_length=MAX_SEQUENCE_LENGTH)
+            total_bleu += bleu.sentence_bleu([d], output)
+            cnt += 1
+        print(f"BLEU: {total_bleu/cnt} {i} / {len_loader}")
+    print(f"BLEU: {total_bleu/cnt}")
 
 
-def generate_examples():
-    en = [
+def translate_examples():
+    eng_examples = [
         "The quick brown fox jumps over the lazy dog.",
         "I enjoy listening to classical music while I work.",
         "The sunset painted the sky in shades of pink and orange.", 
@@ -100,12 +98,12 @@ def generate_examples():
     )
     model.load_state_dict(torch.load("data/transformer_model_final.json"))
 
-    for _en in en:
+    for e in eng_examples:
         print("=================================")
-        print(_en)
-        print(predict(model, tokenizer, _en, max_sequence_length=MAX_SEQUENCE_LENGTH))
+        print(e)
+        print(predict(model, tokenizer, e, max_sequence_length=MAX_SEQUENCE_LENGTH))
 
 
 if __name__ == "__main__":
-    #test()
-    generate_examples()
+    test()
+    #ranslate_examples()

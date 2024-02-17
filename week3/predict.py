@@ -84,7 +84,7 @@ def test():
             output = predict(model, tokenizer, en_, max_sequence_length=MAX_SEQUENCE_LENGTH)
             total_bleu += bleu.sentence_bleu([de_], output)
             count += 1
-            print(count)
+            #print(count)
         print(f"BLEU: {total_bleu / count} {i} / {len(dataloader)}")
 
     print(f"BLEU: {total_bleu / count}")
@@ -118,5 +118,5 @@ def generate_examples():
 
 
 if __name__ == "__main__":
-    #test()
-    generate_examples()
+    test()
+    #generate_examples()

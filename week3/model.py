@@ -3,7 +3,13 @@ import torch
 from torch import Tensor, nn
 from constants import *
 
-class PositionalEncoding(nn.Module):
+class RecursiveDeviceModule(nn.Module):
+    def to(self, device: str):
+        self._device = device
+        for module in self.children():
+            module.to(device)
+
+class PositionalEncoding(RecursiveDeviceModule):
     def __init__(self, max_sequence_length: int, d_model: int):
         super(PositionalEncoding, self).__init__()
         self.max_sequence_length = max_sequence_length
@@ -24,11 +30,10 @@ class PositionalEncoding(nn.Module):
 
     def forward(self, x: Tensor):
         # x: (batch_size, max_sequence_length, d_model)
-
         return x + self.pe[: x.size(1), :]
 
 
-class Attention(nn.Module):
+class Attention(RecursiveDeviceModule):
     def __init__(self, max_sequence_length: int, d_model: int, num_heads: int):
         super(Attention, self).__init__()
         self.max_sequence_length = max_sequence_length
@@ -61,7 +66,7 @@ class Attention(nn.Module):
             self.softmax(attention_score), v
         )  # (batch_size, max_sequence_length, d_n)
 
-class MultiHeadAttention(nn.Module):
+class MultiHeadAttention(RecursiveDeviceModule):
     def __init__(self, max_sequence_length: int, d_model: int, num_heads: int):
         super(MultiHeadAttention, self).__init__()
         self.max_sequence_length = max_sequence_length
@@ -97,7 +102,7 @@ class MultiHeadAttention(nn.Module):
         return self.w_o(attention_outputs)  # (batch_size, max_sequence_length, d_model)
 
 
-class PositionWiseFeedForward(nn.Module):
+class PositionWiseFeedForward(RecursiveDeviceModule):
     def __init__(self, d_model: int, d_ff: int):
         super(PositionWiseFeedForward, self).__init__()
         self.d_model = d_model
@@ -114,7 +119,7 @@ class PositionWiseFeedForward(nn.Module):
         return self.w_2(torch.relu(self.w_1(x)))  # (batch_size, max_sequence_length, d_model)
 
 
-class EncoderLayer(nn.Module):
+class EncoderLayer(RecursiveDeviceModule):
     def __init__(
         self,
         vocab_size: int,
@@ -156,7 +161,7 @@ class EncoderLayer(nn.Module):
         return x  # (batch_size, max_sequence_length, d_model)
 
 
-class PaddingMask(nn.Module):
+class PaddingMask(RecursiveDeviceModule):
     def __init__(self, pad_idx: int):
         super(PaddingMask, self).__init__()
         self.pad_idx = pad_idx
@@ -168,7 +173,7 @@ class PaddingMask(nn.Module):
         return torch.eq(x, self.pad_idx).unsqueeze(1).repeat(1, x.size(1), 1)
 
 
-class LookAheadMask(nn.Module):
+class LookAheadMask(RecursiveDeviceModule):
     def __init__(self):
         super(LookAheadMask, self).__init__()
         self._device = DEVICE
@@ -184,7 +189,7 @@ class LookAheadMask(nn.Module):
         return x
 
 
-class Encoder(nn.Module):
+class Encoder(RecursiveDeviceModule):
     def __init__(
         self,
         pad_idx: int,
@@ -241,7 +246,7 @@ class Encoder(nn.Module):
         return x
 
 
-class DecoderLayer(nn.Module):
+class DecoderLayer(RecursiveDeviceModule):
     def __init__(
         self,
         vocab_size: int,
@@ -292,7 +297,7 @@ class DecoderLayer(nn.Module):
         return x  # (batch_size, max_sequence_length, d_model)
 
 
-class Decoder(nn.Module):
+class Decoder(RecursiveDeviceModule):
     def __init__(
         self,
         pad_idx: int,
@@ -354,7 +359,7 @@ class Decoder(nn.Module):
 
         return x
 
-class Transformer(nn.Module):
+class Transformer(RecursiveDeviceModule):
     def __init__(
         self,
         pad_idx: int,

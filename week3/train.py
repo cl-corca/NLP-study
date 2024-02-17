@@ -23,7 +23,7 @@ class TransformerScheduler(LRScheduler):
 
 def train():
     # get_dataloader based on train.de and train.en in PATH_DIR 
-    dataloader = get_dataloader(is_train=True, batch_size=BATCH_SIZE)
+    dataloader = get_dataloader()
 
     # set model, criterion, optimizer, lr_scheduler  
     model = Transformer(

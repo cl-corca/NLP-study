@@ -1,20 +1,12 @@
 import nltk.translate.bleu_score as bleu
 import torch
-from tokenizers import Tokenizer
-from torch import IntTensor, nn
-from torch.utils.data import DataLoader
+from torch import IntTensor
 
 from model import Transformer
 from constants import *
-from datatool import WMT14Dataset, load_data, get_test_dataloader, get_tokenizer
+from datatool import get_test_dataloader, get_tokenizer
 
-
-class WMT14TestDataset(WMT14Dataset):
-    def __getitem__(self, index: int) -> tuple[str, str]:
-        return self.en[index], self.de[index]
-
-
-def predict(model: nn.Module, tokenizer: Tokenizer, sentence: str, max_sequence_length: int) -> str:
+def predict(model, tokenizer, sentence, max_sequence_length) -> str:
     model.eval()
 
     tokens = tokenizer.encode(sentence).ids

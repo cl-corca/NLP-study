@@ -9,7 +9,8 @@ Implement transformer
 - generate tokenizer and be ready to train 
   * `$ python3 datatool.py`
 
-- train
+- train: this will generate model `data/transformer_model_final.json`
+  * 6 epochs and it takes about 15 hours in `hogwarts`  
   * `$ nohup python3 train.py > week3.out &`
 
 - plot: using week3.out, update plot.py

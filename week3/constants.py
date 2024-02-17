@@ -2,6 +2,8 @@ import os
 import torch
 
 #TODO (cl): Set configurations properly  
+
+#conf for train 
 EPOCHS = 6
 BETAS = (0.9, 0.98)
 EPS = 1e-9
@@ -15,7 +17,10 @@ MAX_SEQUENCE_LENGTH = 50
 WARMUP_STEPS = 8000
 PAD_IDX = 1
 VOCAB_SIZE = 47000
+
+#device. change i of cuda:i to avoid busy GPU 
 DEVICE = torch.device("cuda:1" if torch.cuda.is_available() else "cpu") 
+
+#conf for datatool
 PATH_DATA = os.path.join(os.path.dirname(__file__), "data")
-VOCAB_FREQ_PATH = os.path.join(PATH_DATA, "vocab")
 SPECIAL_SYMBOLS = ["<unk>", "<pad>", "<sos>", "<eos>", "<mask>"]

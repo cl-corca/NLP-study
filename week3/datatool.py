@@ -42,7 +42,7 @@ def save_tokenizer():
             os.path.join(PATH_DATA, "train.de"),
             os.path.join(PATH_DATA, "train.en"),
         ],
-        vocab_size=37000,
+        vocab_size=37000, #this is based on the paper Attention is all you need. 
         min_frequency=1,
         special_tokens=SPECIAL_SYMBOLS,
         suffix="",

@@ -51,8 +51,6 @@ def test():
     dataloader = get_test_dataloader()
     pad_idx = PAD_IDX #dataset.pad
 
-    #pad_idx = dataset.pad
-
     model = Transformer(
         pad_idx, #TODO (cl): check PAD_IDX 
         VOCAB_SIZE, 
@@ -76,7 +74,6 @@ def test():
             output = predict(model, tokenizer, en_, max_sequence_length=MAX_SEQUENCE_LENGTH)
             total_bleu += bleu.sentence_bleu([de_], output)
             count += 1
-            #print(count)
         print(f"BLEU: {total_bleu / count} {i} / {len(dataloader)}")
 
     print(f"BLEU: {total_bleu / count}")

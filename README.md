@@ -6,7 +6,7 @@ Implement transformer
 
 # disclaimer 
 
-경택님께 감사드립니다. 
+무엇보다도 경택님께 감사드립니다. 
 
 - generate tokenizer and be ready to train 
   * `$ python3 datatool.py`
@@ -24,7 +24,7 @@ Implement transformer
   * `$ nohup python3 predict.py > bleu.out`
   * 0.482 (48.2%) 
 
-- 3 examples: modify predict.py to run generate_examples()
+- 3 examples: modify predict.py to run translate_examples()
   *`$ python3 predict.py`
 
   >The quick brown fox jumps over the lazy dog.
@@ -49,9 +49,9 @@ Implement transformer
 
 `$ python3 plot.py`
 
-![RNN](RNN.png?raw=true "RNN")
+![RNN](https://github.com/cl-corca/NLP-study/blob/main/week2/RNN.png?raw=true "RNN")
 
-![LSTM](LSTM.png?raw=true "LSTM")
+![LSTM](https://github.com/cl-corca/NLP-study/blob/main/week2/LSTM.png?raw=true "LSTM")
 
   
 2. Examples to show different results between LSTM and RNN

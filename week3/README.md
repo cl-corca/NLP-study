@@ -15,7 +15,7 @@ Implement transformer
 - plot: using week3.out, update plot.py
   * `$ python3 plot.py`
     
-![image](https://github.com/cl-corca/NLP-study/week3/assets/loss.png)
+![image](https://github.com/cl-corca/NLP-study/blob/week3/assets/loss.png)
 
 - bleu score: modify predict.py to run test()   
   * `$ nohup python3 predict.py > bleu.out`

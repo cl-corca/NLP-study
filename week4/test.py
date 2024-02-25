@@ -37,9 +37,6 @@ def test():
     dataloader = DataLoader(
         dataset,
         batch_size=32,
-        # collate_fn=partial(collate_fn, tokenizer=tokenizer),
-        # num_workers=4,
-        # shuffle=True,
     )
 
     model = GPT()
@@ -47,7 +44,6 @@ def test():
 
     criterion = nn.CrossEntropyLoss(ignore_index=PAD_IDX)
 
-    #model.to(config.device)
     model.to("cuda:1") #TODO (cl): to avoid conflict, hard coded cuda:1 not constants.DEVICE
     model.eval()
     losses: list[float] = []

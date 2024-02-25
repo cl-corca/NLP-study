@@ -9,10 +9,9 @@ from model import GPT
 from datatool import get_dataloader
         
 def train():
-    # get_dataloader based on train.de and train.en in PATH_DIR
     dataloader = get_dataloader()
 
-    # set model, criterion, optimizer, lr_scheduler
+    # set model, criterion, optimizer
     model = GPT()
     criterion = nn.CrossEntropyLoss(ignore_index=PAD_IDX)
     optimizer = model.get_optimizer()

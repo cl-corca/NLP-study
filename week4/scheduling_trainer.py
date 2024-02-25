@@ -1,0 +1,105 @@
+import json
+import torch
+
+from typing import Optional
+from torch.optim.lr_scheduler import LRScheduler
+
+from abc import ABC, abstractmethod
+
+from pydantic import BaseModel
+from torch import nn
+from torch.optim import Optimizer
+from torch.utils.data import DataLoader
+
+
+class Trainer(BaseModel, ABC):
+    model: nn.Module
+    train_dataloader: DataLoader
+    test_dataloader: Optional[DataLoader] = None
+    batch_size: int = 32
+    dataset_shuffle: bool = True
+    dataset_num_workers: int = 0
+    criterion: nn.Module
+    optimizer: Optimizer
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    @property
+    def is_test_enabled(self) -> bool:
+        return self.test_dataloader is not None
+
+    @abstractmethod
+    def run(
+        self,
+        num_epoch: int,
+        device: str,
+        model_save_path: str,
+        model_version: str = "v1",
+        loss_save_path: Optional[str] = None,
+        model_load_path: Optional[str] = None,
+        verbose: bool = False,
+    ) -> tuple[list[float], Optional[list[float]]]:
+        raise NotImplementedError
+    
+
+class LRStepSchedulingTrainer(Trainer):
+    lr_scheduler: LRScheduler | None = None
+
+    def run(
+        self,
+        num_epoch: int,
+        device: str,
+        model_save_path: str,
+        model_version: str = "v1",
+        loss_save_path: Optional[str] = None,
+        model_load_path: Optional[str] = None,
+        verbose: bool = False,
+    ) -> tuple[list[float], Optional[list[float]]]:
+        train_losses: list[float] = []
+        step_train_losses: list[float] = []
+
+        self.model.to(device)
+
+        if model_load_path is not None:
+            self.model.load_state_dict(torch.load(model_load_path))
+
+        for epoch in range(num_epoch):
+            self.model.train()
+            train_loss = 0.0
+            for step, (*data, label) in enumerate(self.train_dataloader):
+                if data[0].device != device:
+                    data = [d.to(device) for d in data]
+                    label = label.to(device)
+                self.optimizer.zero_grad()
+                pred = self.model(*data)
+                pred = torch.transpose(pred, 1, 2)
+                loss = self.criterion(pred, label)
+                loss.backward()
+                self.optimizer.step()
+                batch_loss = loss.item()
+                train_loss += batch_loss
+                if verbose and step % 5000 == 0:
+                    print(
+                        f"epoch: {epoch + 1} loss: {batch_loss} step: {step} / {len(self.train_dataloader)}"
+                    )
+                    torch.save(
+                        self.model.state_dict(),
+                        model_save_path + f".{model_version}.epoch_{epoch}.step_{step}",
+                    )
+                    if loss_save_path is not None:
+                        step_train_losses.append(batch_loss)
+                        with open(loss_save_path + f".{model_version}.json", "w") as f:
+                            f.write(json.dumps(step_train_losses))
+                if self.lr_scheduler is not None:
+                    self.lr_scheduler.step()
+            train_loss /= len(self.train_dataloader)
+            train_losses.append(train_loss)
+
+            print(f"epoch: {epoch + 1}, train loss: {train_loss}")
+            print(f"epoch: {epoch + 1}, train losses: {train_losses}")
+            torch.save(
+                self.model.state_dict(),
+                model_save_path + f".{model_version}.epoch_{epoch}.step_0",
+            )
+        return train_losses, None

@@ -1,5 +1,6 @@
 import os 
 
+#config for train
 DEVICE = "cuda:0"
 EPOCH = 3
 VOCAB_SIZE = 50257
@@ -20,4 +21,5 @@ LR = 2.5e-4
 PAD_IDX = 1
 WEIGHT_DECAY = 0.01
 
+#config for data path
 PATH_DATA = os.path.join(os.path.dirname(__file__), "data")

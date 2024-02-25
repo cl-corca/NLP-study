@@ -1,9 +1,8 @@
 import torch
 from torch import IntTensor
-
-from constants import *
 from model import GPT
 from datatool import load_tokenizer
+from constants import *
 
 
 def load_model():

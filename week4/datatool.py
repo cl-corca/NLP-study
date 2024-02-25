@@ -10,7 +10,6 @@ from torch.utils.data import DataLoader
 
 from constants import *
 
-PATH_DATA = os.path.join(os.path.dirname(__file__), "data")
 special_tokens = ["<unk>", "<pad>", "<sos>", "<eos>", "<mask>"]
 
 
@@ -97,4 +96,4 @@ def get_dataloader(batch_size=BATCH_SIZE):
 
 
 if __name__ == "__main__":
-    get_tokenizer()
+    save_tokenizer()

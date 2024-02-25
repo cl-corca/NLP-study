@@ -3,7 +3,7 @@ import os
 from datasets import load_dataset
 from torch import nn
 
-from scheduling_trainer import LRStepSchedulingTrainer
+from trainer import LRStepSchedulingTrainer
 from constants import *
 from model import GPT
 from datatool import get_dataloader

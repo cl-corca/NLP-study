@@ -1,5 +1,48 @@
 ### NPL-study
 
+## Week4 by CL  
+
+Implement GPT-nano
+
+# disclaimer 
+경택님 감사합니다. 
+메모리가 부족해서 batch size를 16으로 경택님보다도 더 줄였습니다. 
+batch size가 작아서인지 학습시간이 어마어마하게 걸리고 있습니다. 3일정도 돌렸음에도 epoch 0를 다 돌지 못했습니다. 
+
+- save tokenizer 
+  * `$ python3 datatool.py`
+
+- train: this will store models `data/model.vx.epoch_x.step_xxxxx` and `data/loss.vx.json`
+  * Even the first epoch takes more than 4 days in `hogwarts`  
+  * `$ nohup python3 train.py > week4.out &`
+
+- loss plot: using loss.vx.json, update plot.py (학습이 현재 된 거까지만을 바탕으로 그림) 
+  * `$ python3 plot.py`
+    
+  ![image](https://github.com/cl-corca/NLP-study/assets/149552255/223c0567-62a0-4f7c-873a-002852f67041)
+
+- ppl (45와는 거리가 먼 상태) 
+  * `$ python3 test.py`
+
+  perplexity: 160.8789102933949
+  
+- generate 
+  * `$ python3 generate.py`
+        
+  ```My name is Teven and I am
+  <generated>
+   very famous when i say "teases", i have always tried to use a box on my car since i don't have a good enough shelf to handle. i like to use the rear of my car for my job and my computer, yet again i do wish i had been able to do it myself. in the process i wanted a new car in a different way. the thing that i loved is getting the best of them (especially if i'm getting this car) and
+  
+  Albert Einstein was a theoretical physicist
+  <generated>
+   at the time of the universe’s first dark matter and the first of many such experiments in history. by the end of the 19th century, his interest in creating the first black-light, the black-light and the dark was likely to be among the most popular experiments. he led the research of a class of particle physics that became known in the united states as the first black-light, the first black-light, first black-light, first black light. when his
+  
+  The Mona Lisa is a famous portrait painting
+  <generated>
+   based on the iconic character of david. her name has appeared in an online magazine and is an early addition to the brand. her paintings are in their current form, and their style remains the same. as the two sides of the paintings, the face and top of the paintings were on display for many years. they are known for their amazing work and she is currently living in calgary. she was one of thousands of artists working in the company. it is well known that she has
+  ```
+  
+
 ## Week3 by CL  
 
 Implement transformer 
@@ -147,6 +190,7 @@ LSTM may show more accurate result as Sci/Tec while RNN show as Sports based onl
     republic: 0.490
     duke: 0.471
     part: 0.469
+
 
 
 

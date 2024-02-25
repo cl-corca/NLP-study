@@ -8,7 +8,6 @@ from constants import *
 from model import GPT
 from datatool import get_dataloader
         
-
 def train():
     # get_dataloader based on train.de and train.en in PATH_DIR
     dataloader = get_dataloader()

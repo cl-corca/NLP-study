@@ -1,7 +1,9 @@
 import os
+
 from functools import partial
 from random import randint
 from datasets import load_dataset
+
 from tokenizers import Tokenizer
 from torch import IntTensor, LongTensor
 from tokenizers.implementations import ByteLevelBPETokenizer
@@ -10,19 +12,6 @@ from torch.utils.data import DataLoader
 from constants import *
 
 special_tokens = ["<unk>", "<pad>", "<sos>", "<eos>", "<mask>"]
-
-
-def load_data():
-    dataset = load_dataset(
-        "Skylion007/openwebtext",
-        cache_dir=os.path.join(PATH_DATA, "train"),
-    )
-    print(dataset["train"])
-
-    for data in dataset:
-        print(data)
-        break
-
 
 def save_tokenizer():
     tokenizer = ByteLevelBPETokenizer(lowercase=True)
@@ -43,11 +32,6 @@ def save_tokenizer():
     )
     tokenizer.save(os.path.join(PATH_DATA, "tokenizer.json"))
 
-
-def load_tokenizer() -> Tokenizer:
-    tokenizer = Tokenizer.from_file(os.path.join(PATH_DATA, "tokenizer.json"))
-    return tokenizer
-
 def get_tokenizer():
     saved_tokenizer_path = os.path.join(PATH_DATA, "tokenizer.json")
     if not os.path.exists(saved_tokenizer_path):
@@ -56,7 +40,8 @@ def get_tokenizer():
     return tokenizer
 
 def collate_fn(
-    batch: list[dict[str, str]], tokenizer: Tokenizer
+    batch: list[dict[str, str]], 
+    tokenizer: Tokenizer,
 ) -> tuple[IntTensor, LongTensor]:
     batch_texts = [data["text"] for data in batch]
     batch_tokens = tokenizer.encode_batch(batch_texts)

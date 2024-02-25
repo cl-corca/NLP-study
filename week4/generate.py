@@ -1,7 +1,7 @@
 import torch
 from torch import IntTensor
 from model import GPT
-from datatool import load_tokenizer
+from datatool import get_tokenizer
 from constants import *
 
 
@@ -12,19 +12,8 @@ def load_model():
     model.eval()
     return model
 
-
-def generate(model: GPT, prompt: str, max_iter: int = 100):
-    tokenizer = load_tokenizer()
-    input_ids = tokenizer.encode(prompt).ids
-    input_ids = IntTensor([input_ids])
-    output_ids = model.generate(input_ids, max_iter=max_iter, temperature=1.0, top_k=40)
-    output_ids = output_ids.tolist()
-    print(tokenizer.decode(output_ids[0]))
-    return output_ids
-
-
-def stream(model: GPT, prompt: str, max_iter: int = 100):
-    tokenizer = load_tokenizer()
+def stream(model, prompt, max_iter = 100):
+    tokenizer = get_tokenizer()
     input_ids = tokenizer.encode(prompt).ids
     input_ids = IntTensor([input_ids])
     stream_gen = model.stream(input_ids, max_iter=max_iter, temperature=1.0, top_k=40)
@@ -37,11 +26,17 @@ def stream(model: GPT, prompt: str, max_iter: int = 100):
 
 if __name__ == "__main__":
     model = load_model()
-    print("<prompt> My name is Teven and I am\n<generated> ")
-    stream(model, "My name is Teven and I am", max_iter=100)
+    prompt = "My name is Teven and I am"
+    print(f"{prompt}\n<generated> ")
+    stream(model, prompt)
     print("\n====================\n")
-    print("<prompt> I am a student at KAIST\n<generated> ")
-    stream(model, "I am a student at KAIST", max_iter=100)
+
+    prompt = "Albert Einstein was a theoretical physicist"
+    print(f"{prompt}\n<generated> ")
+    stream(model, prompt)
     print("\n====================\n")
-    print("<prompt> I like to eat\n<generated> ")
-    stream(model, "I like to eat", max_iter=100)
+
+    prompt = "The Mona Lisa is a famous portrait painting"
+    print(f"{prompt}\n<generated> ")
+    stream(model, prompt)
+    print("\n====================\n")

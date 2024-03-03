@@ -1,5 +1,10 @@
 ### NPL-study
 
+## Week5 by CL  
+- [Scaling Law](week5/scaling.md)
+- [FLAN](week5/zeroshotlearners.md)
+- [InstructGPT](week5/humanfeedback.md)
+  
 ## Week4 by CL  
 
 Implement GPT-nano
